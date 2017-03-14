@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+	http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd"
+       default-lazy-init="true">
+
+	<!-- 启用spring mvc 注解 -->
+	<context:annotation-config/>
+	<!--<mvc:annotation-driven/>-->
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
+		<property name="order" value="1"/>
+	</bean>
+	<context:component-scan base-package="ren.k88.**.controller"/>
+
+	<mvc:resources mapping="/static/**" location="static/"/>
+
+    <bean id="multipartResolver"
+	    class="org.springframework.web.multipart.commons.CommonsMultipartResolver">  
+	    <!-- 设置上传文件的最大尺寸为30MB -->  
+	    <property name="maxUploadSize">  
+	        <value>31457280</value>
+	    </property>  
+	    <property name="defaultEncoding" value="UTF-8"/>
+	</bean>
+
+	<context:property-placeholder location="classpath:system.properties" />
+
+	<bean id="velocityConfig"
+		  class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
+		<property name="resourceLoaderPath" value="/WEB-INF/tpl/"/>
+		<property name="configLocation" value="classpath:velocity.properties"/>
+	</bean>
+
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.velocity.VelocityViewResolver">
+		<property name="cache" value="false"/>
+		<property name="prefix" value=""/>
+		<property name="suffix" value=".vm"/>
+		<property name="toolboxConfigLocation" value="/WEB-INF/classes/toolbox.xml"/>
+		<property name="exposeSpringMacroHelpers" value="true"/>
+		<property name="exposeRequestAttributes" value="true"/>
+		<property name="exposeSessionAttributes" value="true"/>
+		<property name="allowSessionOverride" value="true"/>
+		<property name="allowRequestOverride" value="true"/>
+		<property name="contentType" value="text/html;charset=UTF-8"/>
+	</bean>
+
+
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<ref bean="jacksonMessageConverter"/>
+			</list>
+		</property>
+	</bean>
+	<bean id="jacksonMessageConverter"
+		  class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+		<property name="supportedMediaTypes">
+			<list>
+				<value>application/json;charset=UTF-8</value>
+				<value>text/html;charset=UTF-8</value>
+				<value>text/plain;charset=UTF-8</value>
+				<value>*/*</value>
+			</list>
+		</property>
+		<property name="objectMapper">
+			<bean class="com.fasterxml.jackson.databind.ObjectMapper">
+				<property name="dateFormat">
+					<bean class="java.text.SimpleDateFormat">
+						<constructor-arg type="java.lang.String" value="yyyy-MM-dd HH:mm:ss"/>
+					</bean>
+				</property>
+			</bean>
+		</property>
+
+	</bean>
+</beans>  
